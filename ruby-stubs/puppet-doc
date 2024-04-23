@@ -1,14 +1,32 @@
 require 'English'
 
-status = 0
-ARGV.each do |arg|
-  output = `puppet strings #{arg} | grep -Eo -e '^\\[warn\\]:.*$'`
-  next if $CHILD_STATUS.exitstatus == 1
-  puts "#{arg}: failed Puppet validation"
-  puts output
-  status = 1
+# Get all changed files to run tests against them
+changed_files = ARGV.join(" ")
+output = `puppet strings generate #{changed_files}`
+
+# Check the exit status
+if $?.exitstatus != 0
+  # the command 'puppet strings generate' exit always with 0 exit code
+  # even if there was error/warning in generating the documentation
+  # if the script exits here, this means the command 'puppet strings generate' is not running properly
+  puts "Error: puppet strings generate failed. Exiting."
+  exit($?.exitstatus)
 end
 
-exit status
+# Extract lines starting from 'Files' and save it to 'summary'
+summary = output[%r{Files.*\d.*}m]
+# Extract the rest of the output and save it to 'logs'
+logs = output.sub(summary, '')
+
+# Check if 'logs' is not empty (ignoring spaces and new lines)
+if logs.strip != ""
+  puts logs
+  exit(1)
+end
+
+# If no warnings or errors were found, print the summary
+# uncomment the following line, if you want to print summary to the output
+# puts "Summary: #{summary}"
+exit(0)
 
 # vim: ft=ruby
