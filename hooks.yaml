@@ -35,7 +35,7 @@
     - puppet-strings
   description: Check Puppet manifests for documentation
   entry: puppet-doc
-  files: \.pp$
+  files: ^(?:site\/(?:[^\/]+\/)*[^\/]+\.rb|.+\.pp)$
   language: ruby
   name: Validate Puppet documentation
 
