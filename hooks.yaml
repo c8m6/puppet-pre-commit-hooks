@@ -22,7 +22,9 @@
   name: Validate g10k Puppetfile
 
 - id: puppet-lint
-  additional_dependencies: ['puppet-lint']
+  additional_dependencies:
+    - 'puppet-lint'
+    - 'voxpupuli-puppet-lint-plugins'
   description: Check Puppet manifests for stylistic problems
   entry: puppet-lint
   files: \.pp$
